@@ -1,0 +1,35 @@
+[Unit]
+Description=Intranet Litio Service - Sistema de gestión interna
+Documentation=https://github.com/litio-service/intranet
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=forking
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/var/www/litio-erp
+Environment=NODE_ENV=production
+Environment=PORT=3000
+ExecStart=/usr/bin/pm2 start ecosystem.config.js --env production
+ExecReload=/usr/bin/pm2 reload ecosystem.config.js --env production
+ExecStop=/usr/bin/pm2 stop intranet-litio-service
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=litio-erp
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/litio-erp /var/log/litio-erp /tmp
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
